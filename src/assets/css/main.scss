@@ -18,6 +18,8 @@ button {
   text-transform: uppercase;
   letter-spacing: 2px;
   font-weight: bold;
+  line-height: 1em;
+  outline: none;
   &:hover {
     cursor: pointer;
     background-color: tint($second, 15%);
@@ -33,10 +35,28 @@ button {
   }
 }
 
+.overworld {
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(64, 67, 81, 0.95);
+  display: flex;
+  img {
+    margin: auto;
+  }
+}
+
 .green {
   color: $green;
 }
 
 .red {
   color: $red;
+}
+
+.bold {
+  font-weight: bold;
 }

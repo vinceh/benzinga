@@ -1,5 +1,9 @@
 <template>
   <div>
+    <div class="overworld"
+         v-if="initialLoading">
+      <img src="https://dsgcewkenvygd.cloudfront.net/assets/balls.svg"/>
+    </div>
     <div class="header">
       <div class="logo">
         EXCHANGE
@@ -34,7 +38,7 @@
                 cash
               </div>
               <div class="value">
-                <span class="dollar-sign">$</span>96,231<span class="cents">.88</span>
+                <span class="dollar-sign">$</span>{{ numberWithCommas(dollar(balance)) }}<span class="cents" v-if="cents(balance) > 0">.{{ cents(balance) }}</span><span class="cents" v-else>.00</span>
               </div>
             </div>
           </div>
@@ -49,12 +53,12 @@
                 <th>Value</th>
               </tr>
               <tr>
-                <td>Apple(AAPL)</td>
+                <td>AAPL</td>
                 <td>215</td>
                 <td>$108.33</td>
                 <td>$117.91</td>
-                <td class="green">+9.58</td>
-                <td>$25350.65(<span class="green">+2059.7</span>)</td>
+                <td class="green">+9.58(10.2%)</td>
+                <td>$25,350.65(<span class="green">+2059.7</span>)</td>
               </tr>
               <tr>
                 <td>Apple(AAPL)</td>
@@ -100,7 +104,10 @@
               +1.3(1.11%)
             </div>
             <div class="symbol">
-              Apple (AAPL)
+              Apple
+              <span class="bold">
+                (AAPL)
+              </span>
             </div>
             <div class="subtext">
               <span class="label">Open</span> $116.78
@@ -150,8 +157,20 @@
 export default {
   data () {
     return {
-      foo: 'bar'
+      balance: null,
+      portfolio: [],
+      initialLoading: true
     }
+  },
+  methods () {
+
+  },
+  created () {
+    this.balance = this.getBalance()
+    this.portfolio = this.getPortfolio()
+    this.initialLoading = false
+
+    console.log('portfolio', this.portfolio)
   }
 }
 </script>
@@ -279,6 +298,10 @@ export default {
       color: tint($prime, 30%);
       text-transform: uppercase;
       letter-spacing: 1px;
+      &:hover {
+        cursor: pointer;
+        color: tint($prime, 50%);
+      }
     }
     td {
       // border-top: 1px solid tint($dark, 10%);

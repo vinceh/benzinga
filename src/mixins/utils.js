@@ -1,14 +1,13 @@
 module.exports = {
   methods: {
-    cardIconClass (issueType) {
-      switch (issueType) {
-        case 'story':
-          return 'mdi-sword'
-        case 'task':
-          return 'mdi-shield-outline'
-        case 'bug':
-          return 'mdi-biohazard'
-      }
+    dollar (val) {
+      return Math.floor(val)
+    },
+    cents (val) {
+      return val % 1
+    },
+    numberWithCommas (x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     }
   }
 }
