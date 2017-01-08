@@ -1,0 +1,42 @@
+@import "reset";
+@import "vendor/bourbon";
+@import "colors";
+
+body {
+  background-color: $dark;
+  color: #FFFFFA;
+  font-family: 'Cabin', sans-serif;
+}
+
+button {
+  background-color: $second;
+  color: #fffffa;
+  border: 1px solid $second;
+  border-radius: 2px;
+  padding: 0.8em 2.5em;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: bold;
+  &:hover {
+    cursor: pointer;
+    background-color: tint($second, 15%);
+  }
+  &.outline {
+    background-color: transparent;
+    border: 1px solid $second;
+    color: $second;
+    &:hover {
+      cursor: pointer;
+      background-color: tint($dark, 15%);
+    }
+  }
+}
+
+.green {
+  color: $green;
+}
+
+.red {
+  color: $red;
+}
