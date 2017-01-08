@@ -49,6 +49,35 @@ button {
   }
 }
 
+.value-item {
+  text-align: center;
+  border-right: 1px solid tint($prime, 15%);
+  padding: 20px 0;
+  &:last-child {
+    border-right: none;
+  }
+  .label {
+    text-transform: uppercase;
+    font-size: 13px;
+    opacity: 0.5;
+    letter-spacing: 1px;
+  }
+  .value {
+    font-size: 30px;
+    letter-spacing: 1px;
+    margin-top: 20px;
+    .dollar-sign {
+      font-size: 14px;
+      position: relative;
+      top: -1px;
+      margin-right: 2px;
+    }
+    .cents {
+      font-size: 14px;
+    }
+  }
+}
+
 .green {
   color: $green;
 }
