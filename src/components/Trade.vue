@@ -100,11 +100,12 @@
         <div class="input-wrap"
              :class="inputClass()">
           <input type="text"
-                 placeholder="Search for a symbol..." tabindex="1">
+                 placeholder="Search for a symbol..." tabindex="1"
+                 v-model="searchSymbol"
+                 @keydown.enter="search">
           <span class="error"></span>
           <img src="https://dsgcewkenvygd.cloudfront.net/assets/balls.svg"/>
         </div>
-
         <stock v-if="currentStock"></stock>
       </div>
     </div>
@@ -120,7 +121,8 @@ export default {
       balance: null,
       portfolio: [],
       initialLoading: true,
-      currentStock: null
+      currentStock: null,
+      searching: false
     }
   },
   components: {
@@ -128,7 +130,18 @@ export default {
   },
   methods: {
     inputClass () {
-      return 'loading'
+      if (this.searching) {
+        return 'loading'
+      } else {
+        return ''
+      }
+    },
+    search () {
+      this.searching = true
+      this.findStock(this.searchSymbol).then((stockData) => {
+        this.currentStock = stockData
+        this.searching = false
+      })
     }
   },
   created () {
@@ -222,7 +235,13 @@ export default {
           background-color: tint($prime, 5%)
         }
       }
+      &.loading {
+        img {
+          opacity: 1;
+        }
+      }
       img {
+        opacity: 0;
         position: absolute;
         right: 5px;
         top: 0px;

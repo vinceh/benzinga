@@ -1,3 +1,9 @@
+/*  This exists as a simple store for the app
+ *  to fetch data.
+ */
+
+import Vue from 'vue'
+
 module.exports = {
   methods: {
     getBalance () {
@@ -21,6 +27,14 @@ module.exports = {
     },
     storageGetObject (key) {
       return JSON.parse(window.localStorage.getItem(key))
+    },
+    findStock (symbol) {
+      var url = `http://data.benzinga.com/rest/richquoteDelayed?symbols=${symbol.toUpperCase()}`
+      return new Promise((resolve, reject) => {
+        Vue.http.get(url).then((res) => {
+          console.log(res)
+        })
+      })
     }
   }
 }
