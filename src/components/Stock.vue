@@ -76,7 +76,14 @@ export default {
   props: ['stockData', 'currentOwned', 'currentMoney'],
   data () {
     return {
-      searchError: null
+      searchError: null,
+      quantity: null
+    }
+  },
+  watch: {
+    stockData (newData) {
+      this.searchError = null
+      this.quantity = null
     }
   },
   methods: {
