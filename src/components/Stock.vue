@@ -1,29 +1,33 @@
 <template>
   <div class="result">
+    <!--
+      Syntax is weird here because we are using the ::before CSS
+      attribute and also because spans/newlines cause spaces
+      and we want to avoid those
+    -->
     <div class="title">
-      <div class="change up">
-        +1.3(1.11%)
-      </div>
+      <div class="change"
+           :class="updownClass(data.change)">{{ data.change }}(<span class="percentChange">{{ data.changePercent}}%)</span></div>
       <div class="symbol">
-        Apple
+        {{ data.name }}
         <span class="bold">
-          (AAPL)
+          ({{ data.symbol }})
         </span>
       </div>
       <div class="subtext">
-        <span class="label">Open</span> $116.78
+        <span class="label">Open</span> ${{ numberWithCommas(data.open) }}
       </div>
       <div class="subtext">
-        <span class="label">Volume</span> 31,751,900
+        <span class="label">Volume</span> {{ numberWithCommas(data.volume) }}
       </div>
       <div class="subtext">
-        <span class="label">52 Week High</span> $119.86
+        <span class="label">52 Week High</span> ${{ numberWithCommas(data.fiftyTwoWeekHigh) }}
       </div>
       <div class="subtext">
-        <span class="label">52 Week Low</span> $89.47
+        <span class="label">52 Week Low</span> ${{ numberWithCommas(data.fiftyTwoWeekLow) }}
       </div>
       <div class="subtext">
-        <span class="label">Industry</span> Consumer Electronics
+        <span class="label">Industry</span> {{ data.industry }}
       </div>
     </div>
     <div class="details">
@@ -32,7 +36,7 @@
           bid
         </div>
         <div class="value">
-          <span class="dollar-sign">$</span>117<span class="cents">.79</span>
+          <span class="dollar-sign">$</span>{{ numberWithCommas(dollar(data.bidPrice)) }}<span class="cents">.{{ cents(data.bidPrice) }}</span>
         </div>
       </div>
       <div class="value-item">
@@ -40,9 +44,16 @@
           ask
         </div>
         <div class="value">
-          <span class="dollar-sign">$</span>117<span class="cents">.84</span>
+          <span class="dollar-sign">$</span>{{ numberWithCommas(dollar(data.askPrice)) }}<span class="cents">.{{ cents(data.askPrice) }}</span>
         </div>
       </div>
+    </div>
+    <div class="quantity-wrap">
+      <div class="you-own">
+        You currently own <span class="bold">{{ currentOwned }}</span> shares of <span class="bold">{{ data.symbol }}</span>
+      </div>
+      <input type="text"
+             placeholder="Enter a quantity">
     </div>
     <div class="actions">
       <button type="button" class="outline">sell</button>
@@ -53,15 +64,21 @@
 
 <script>
 export default {
-  props: ['data', 'maxSell'],
+  props: ['stockData', 'currentOwned'],
   data () {
     return {}
   },
-  methods () {
-
+  methods: {
+    symbol () {
+      return this.stockData[Object.keys(this.stockData)[0]].symbol
+    }
+  },
+  computed: {
+    data () {
+      return this.stockData[this.symbol()]
+    }
   },
   created () {
-
   }
 }
 </script>
@@ -86,9 +103,6 @@ export default {
       right: 20px;
       top: 20px;
       font-size: 25px;
-      &.up {
-        color: $green;
-      }
     }
     .symbol {
       font-size: 25px;
@@ -113,6 +127,19 @@ export default {
       .value {
         font-size: 40px;
       }
+    }
+  }
+  .quantity-wrap {
+    padding: 13px;
+    padding-bottom: 0;
+    .you-own {
+      margin-bottom: 10px;
+    }
+    input {
+      width: 100%;
+      border-radius: 2px;
+      padding: 10px;
+      box-sizing: border-box;
     }
   }
   .actions {

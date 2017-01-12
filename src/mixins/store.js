@@ -31,8 +31,14 @@ module.exports = {
     findStock (symbol) {
       var url = `http://data.benzinga.com/rest/richquoteDelayed?symbols=${symbol.toUpperCase()}`
       return new Promise((resolve, reject) => {
-        Vue.http.get(url).then((res) => {
-          console.log(res)
+        Vue.http.jsonp(url).then((res) => {
+          console.log('stock object', JSON.parse(res.bodyText))
+          var body = res.body
+          if (body.null) {
+            reject(body.null.error.message)
+          } else {
+            resolve(res.body)
+          }
         })
       })
     }

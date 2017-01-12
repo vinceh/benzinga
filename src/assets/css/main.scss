@@ -89,3 +89,19 @@ button {
 .bold {
   font-weight: bold;
 }
+
+.up {
+  color: $green;
+  &::before {
+    content: "+"
+  }
+  .percentChange {
+    &::before {
+      content: "+"
+    }
+  }
+}
+
+.down {
+  color: $red;
+}

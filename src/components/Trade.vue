@@ -102,11 +102,15 @@
           <input type="text"
                  placeholder="Search for a symbol..." tabindex="1"
                  v-model="searchSymbol"
-                 @keydown.enter="search">
-          <span class="error"></span>
+                 @keydown.enter="search"
+                 onClick="this.select();">
+          <span class="error"
+                v-if="searchError">Unknown Symbol</span>
           <img src="https://dsgcewkenvygd.cloudfront.net/assets/balls.svg"/>
         </div>
-        <stock v-if="currentStock"></stock>
+        <stock v-if="currentStock"
+               :stock-data="currentStock"
+               :current-owned="currentlyOwned(currentStock)"></stock>
       </div>
     </div>
   </div>
@@ -138,18 +142,23 @@ export default {
     },
     search () {
       this.searching = true
+      this.searchError = false
       this.findStock(this.searchSymbol).then((stockData) => {
         this.currentStock = stockData
         this.searching = false
+      }).catch((msg) => {
+        this.searching = false
+        this.searchError = true
       })
+    },
+    currentlyOwned (stock) {
+      return 213
     }
   },
   created () {
     this.balance = this.getBalance()
     this.portfolio = this.getPortfolio()
     this.initialLoading = false
-
-    console.log('portfolio', this.portfolio)
   }
 }
 </script>
@@ -246,6 +255,14 @@ export default {
         right: 5px;
         top: 0px;
         height: 44px;
+      }
+      .error {
+        position: absolute;
+        right: 20px;
+        top: 17px;
+        font-size: 12px;
+        color: $red;
+        z-index: 99;
       }
     }
   }
