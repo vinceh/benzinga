@@ -20,7 +20,7 @@ module.exports = {
         portfolio = []
         this.storageSetObject('portfolio', portfolio)
       }
-      return JSON.parse(portfolio)
+      return portfolio
     },
     saveBalance (newBalance) {
       window.localStorage.setItem('balance', newBalance)
