@@ -8,6 +8,10 @@
       <div class="logo">
         EXCHANGE
       </div>
+      <div class="reset"
+           @click="resetData">
+        reset data
+      </div>
     </div>
     <div class="container">
       <div class="left">
@@ -17,7 +21,7 @@
             <i class="mdi mdi-settings"></i>
           </div>
           <div class="big-numbers">
-            <div class="value-item">
+            <!-- <div class="value-item">
               <div class="label">
                 portfolio value
               </div>
@@ -30,9 +34,9 @@
                 net worth
               </div>
               <div class="value">
-                <span class="dollar-sign">$</span>103,321<span class="cents">.23</span>
+                <span class="dollar-sign">$</span>4,812<span class="cents">.56</span>
               </div>
-            </div>
+            </div> -->
             <div class="value-item">
               <div class="label">
                 cash
@@ -43,62 +47,26 @@
             </div>
           </div>
           <div class="assets-wrap">
-            <table>
-              <tr>
-                <th>Company</th>
-                <th>QTY</th>
-                <th>Purchased</th>
-                <th>Current</th>
-                <th>Delta</th>
-                <th>Value</th>
-              </tr>
-              <tr>
-                <td>AAPL</td>
-                <td>215</td>
-                <td>$108.33</td>
-                <td>$117.91</td>
-                <td class="green">+9.58(10.2%)</td>
-                <td>$25,350.65(<span class="green">+2059.7</span>)</td>
-              </tr>
-              <tr>
-                <td>Apple(AAPL)</td>
-                <td>215</td>
-                <td>$108.33</td>
-                <td>$117.91</td>
-                <td class="red">-9.58</td>
-                <td>$25350.65(<span class="red">-2059.7</span>)</td>
-              </tr>
-              <tr>
-                <td>Apple(AAPL)</td>
-                <td>215</td>
-                <td>$108.33</td>
-                <td>$117.91</td>
-                <td class="red">-9.58</td>
-                <td>$25350.65(<span class="red">-2059.7</span>)</td>
-              </tr>
-              <tr>
-                <td>Apple(AAPL)</td>
-                <td>215</td>
-                <td>$108.33</td>
-                <td>$117.91</td>
-                <td class="green">+9.58</td>
-                <td>$25350.65(<span class="green">+2059.7</span>)</td>
-              </tr>
-              <tr>
-                <td>Apple(AAPL)</td>
-                <td>215</td>
-                <td>$108.33</td>
-                <td>$117.91</td>
-                <td class="green">+9.58</td>
-                <td>$25350.65(<span class="green">+2059.7</span>)</td>
-              </tr>
-            </table>
+            <div v-if="portfolio.length > 0">
+              <table>
+                <tr>
+                  <th>Company</th>
+                  <th>Quantity Owned</th>
+                  <th>Total Value</th>
+                </tr>
+                <stock-row v-for="stock in portfolio"
+                           :stock-data="stock"
+                           @showStock="showStock"></stock-row>
+              </table>
+            </div>
+            <div class="no-stocks" v-else>
+              No Stocks in Portfolio
+            </div>
           </div>
         </div>
       </div>
       <div class="symbol-search-wrap right">
-        <div class="input-wrap"
-             :class="inputClass()">
+        <div class="input-wrap">
           <input type="text"
                  placeholder="Search for a symbol..." tabindex="1"
                  v-model="searchSymbol"
@@ -110,7 +78,10 @@
         </div>
         <stock v-if="currentStock"
                :stock-data="currentStock"
-               :current-owned="currentlyOwned(currentStock)"></stock>
+               :current-owned="currentlyOwned(currentStock)"
+               :current-money="balance"
+               @buyStock="buyStock"
+               @sellStock="sellStock"></stock>
       </div>
     </div>
   </div>
@@ -118,6 +89,7 @@
 
 <script>
 import Stock from './Stock'
+import StockRow from './StockRow'
 
 export default {
   data () {
@@ -126,11 +98,12 @@ export default {
       portfolio: [],
       initialLoading: true,
       currentStock: null,
-      searching: false
+      searching: false,
+      searchError: false
     }
   },
   components: {
-    Stock
+    Stock, StockRow
   },
   methods: {
     inputClass () {
@@ -140,19 +113,76 @@ export default {
         return ''
       }
     },
-    search () {
+    showStock (symbol) {
       this.searching = true
       this.searchError = false
-      this.findStock(this.searchSymbol).then((stockData) => {
+      this.findStock(symbol).then((stockData) => {
         this.currentStock = stockData
         this.searching = false
-      }).catch((msg) => {
-        this.searching = false
-        this.searchError = true
       })
     },
+    search () {
+      if (this.searchSymbol) {
+        this.searching = true
+        this.searchError = false
+        this.findStock(this.searchSymbol).then((stockData) => {
+          this.currentStock = stockData
+          this.searching = false
+        }).catch((msg) => {
+          this.searching = false
+          this.searchError = true
+        })
+      }
+    },
     currentlyOwned (stock) {
-      return 213
+      var portStock = this.findStockInPortfolio(stock[Object.keys(stock)[0]])
+      if (portStock) {
+        return portStock.qty
+      } else {
+        return 0
+      }
+    },
+    findStockInPortfolio (symbolData) {
+      return this.portfolio.find((el) => {
+        return el.symbol === symbolData.symbol
+      })
+    },
+    sellStock (symbolData, qty) {
+      var stock = this.findStockInPortfolio(symbolData)
+      stock.qty -= qty
+      if (stock.qty === 0) {
+        this.portfolio.splice(this.portfolio.indexOf(stock), 1)
+      }
+      this.savePortfolio(this.portfolio)
+
+      this.balance += this.roundCurrency(symbolData.bidPrice * qty)
+      this.saveBalance(this.balance * 100)
+    },
+    buyStock (symbolData, qty) {
+      var stock = this.findStockInPortfolio(symbolData)
+
+      // we have this stock already, buying more!
+      if (stock) {
+        stock.qty += qty
+      } else {
+        // we don't got this stock
+        this.portfolio.push({
+          symbol: symbolData.symbol,
+          companyName: symbolData.name,
+          qty: qty
+        })
+      }
+      this.savePortfolio(this.portfolio)
+
+      // deduct the money!
+      this.balance -= this.roundCurrency(symbolData.askPrice * qty)
+      this.saveBalance(this.balance * 100)
+    },
+    resetData () {
+      this.portfolio = []
+      this.savePortfolio(this.portfolio)
+      this.balance = 100000
+      this.saveBalance(this.balance * 100)
     }
   },
   created () {
@@ -184,6 +214,15 @@ export default {
     letter-spacing: 4px;
     color: $second;
     float: left;
+  }
+  .reset {
+    float: right;
+    padding-right: 30px;
+    color: $second;
+    &:hover {
+      cursor: pointer;
+      text-decoration: underline;
+    }
   }
 }
 
@@ -220,7 +259,7 @@ export default {
       display: flex;
       padding: 20px 0 30px;
       .value-item {
-        width: 33%;
+        width: 100%;
       }
     }
   }
@@ -266,43 +305,13 @@ export default {
       }
     }
   }
-  .assets-wrap {
-    table {
-      width: 100%;
-      text-align: left;
-      color: #ddd;
-      font-size: 14px;
-    }
-    th, td {
-      padding: 17px 20px;
-    }
-    th {
-      font-size: 13px;
-      color: tint($prime, 30%);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      &:hover {
-        cursor: pointer;
-        color: tint($prime, 50%);
-      }
-    }
-    td {
-      // border-top: 1px solid tint($dark, 10%);
-    }
-    tr {
-      &:nth-child(2n) {
-        td {
-          background-color: tint(#4c515b, 3%);
-        }
-      }
-      &:hover {
-        td {
-          cursor: pointer;
-          background-color: tint(#4c515b, 5%);
-        }
-      }
-    }
-  }
+}
+
+.no-stocks {
+  padding: 15px;
+  opacity: 0.5;
+  text-align: center;
+  border-top: 1px dashed #888;
 }
 
 body {

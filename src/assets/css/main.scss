@@ -105,3 +105,41 @@ button {
 .down {
   color: $red;
 }
+
+.assets-wrap {
+  table {
+    width: 100%;
+    text-align: left;
+    color: #ddd;
+    font-size: 14px;
+  }
+  th, td {
+    padding: 17px 20px;
+  }
+  th {
+    font-size: 13px;
+    color: tint($prime, 30%);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    &:hover {
+      cursor: pointer;
+      color: tint($prime, 50%);
+    }
+  }
+  td {
+    // border-top: 1px solid tint($dark, 10%);
+  }
+  tr {
+    &:nth-child(2n) {
+      td {
+        background-color: tint(#4c515b, 3%);
+      }
+    }
+    &:hover {
+      td {
+        cursor: pointer;
+        background-color: tint(#4c515b, 5%);
+      }
+    }
+  }
+}

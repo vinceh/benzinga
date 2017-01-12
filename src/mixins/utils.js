@@ -7,7 +7,11 @@ module.exports = {
       return (val % 1).toFixed(2).substring(2)
     },
     numberWithCommas (x) {
-      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      if (x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      } else {
+        return 0
+      }
     },
     updownClass (val) {
       if (val >= 0) {
@@ -15,6 +19,12 @@ module.exports = {
       } else {
         return 'down'
       }
+    },
+    valInCents (val) {
+      return Math.floor((val * 100))
+    },
+    roundCurrency (val) {
+      return Math.round(val * 100) / 100
     }
   }
 }
