@@ -26,7 +26,7 @@ module.exports = {
       window.localStorage.setItem('balance', newBalance)
     },
     savePortfolio (portfolio) {
-      this.storageSetObject('portfolio', JSON.stringify(portfolio))
+      this.storageSetObject('portfolio', portfolio)
     },
     storageSetObject (key, obj) {
       return window.localStorage.setItem(key, JSON.stringify(obj))
@@ -35,7 +35,7 @@ module.exports = {
       return JSON.parse(window.localStorage.getItem(key))
     },
     findStock (symbol) {
-      var url = `http://data.benzinga.com/rest/richquoteDelayed?symbols=${symbol.toUpperCase()}`
+      var url = `https://data.benzinga.com/rest/richquoteDelayed?symbols=${symbol.toUpperCase()}`
       return new Promise((resolve, reject) => {
         Vue.http.jsonp(url).then((res) => {
           console.log(JSON.parse(res.bodyText))
