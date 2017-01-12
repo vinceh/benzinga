@@ -18,9 +18,8 @@ module.exports = {
       var portfolio = this.storageGetObject('portfolio')
       if (!portfolio) {
         portfolio = []
-        this.storageSetObject('portfolio', JSON.stringify(portfolio))
+        this.storageSetObject('portfolio', portfolio)
       }
-      console.log(portfolio)
       return JSON.parse(portfolio)
     },
     saveBalance (newBalance) {
